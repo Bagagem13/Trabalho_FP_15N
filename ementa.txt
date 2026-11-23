@@ -1,0 +1,21 @@
+codigo,nome,categoria,preco,doses
+E01,Caldo Verde,entrada,2.80,25
+E02,Pão com Manteiga e Azeitonas,entrada,1.90,40
+E03,Pataniscas de Bacalhau (3 un.),entrada,4.50,15
+E04,Salada Mista,entrada,3.20,12
+P01,Bacalhau à Brás,prato,11.50,14
+P02,Francesinha,prato,12.90,20
+P03,Arroz de Pato,prato,10.80,10
+P04,Lasanha de Legumes,prato,9.50,8
+P05,Bitoque com Ovo,prato,10.20,18
+P06,Polvo à Lagareiro,prato,16.90,5
+S01,Arroz Doce,sobremesa,2.90,16
+S02,Mousse de Chocolate,sobremesa,3.20,12
+S03,Pastel de Nata,sobremesa,1.40,30
+S04,Leite-Creme,sobremesa,3.10,0
+S05,Salada de Fruta,sobremesa,2.50,10
+B01,Água 50cL,bebida,1.00,60
+B02,Sumo de Laranja Natural,bebida,2.60,20
+B03,Refrigerante (lata),bebida,1.80,48
+B04,Vinho Verde (copo),bebida,2.20,25
+B05,Café,bebida,0.90,80
