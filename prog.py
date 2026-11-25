@@ -11,12 +11,12 @@ import sys
 # ---------------------------------------------------------------
 # ementa: código -> dicionário com os dados do artigo
 EMENTA_EXEMPLO = {
-    "E01": {"nome": "Sopa do dia",       "categoria": "entrada",   "preco": 2.50,  "doses": 10},
-    "E02": {"nome": "Pastéis de bacalhau", "categoria": "entrada", "preco": 3.80,  "doses": 8},
-    "P01": {"nome": "Bacalhau à Brás",   "categoria": "prato",     "preco": 9.90,  "doses": 4},
-    "P02": {"nome": "Frango assado",     "categoria": "prato",     "preco": 8.50,  "doses": 6},
-    "S01": {"nome": "Pudim",             "categoria": "sobremesa", "preco": 2.80,  "doses": 5},
-    "B01": {"nome": "Água 0,5L",         "categoria": "bebida",    "preco": 1.20,  "doses": 20},
+    "E01": {"nome": "Sopa do dia", "categoria": "entrada", "preco": 2.50, "doses": 10},
+    "E02": {"nome": "Pastéis de bacalhau", "categoria": "entrada", "preco": 3.80, "doses": 8},
+    "P01": {"nome": "Bacalhau à Brás", "categoria": "prato", "preco": 9.90, "doses": 4},
+    "P02": {"nome": "Frango assado", "categoria": "prato", "preco": 8.50, "doses": 6},
+    "S01": {"nome": "Pudim", "categoria": "sobremesa", "preco": 2.80, "doses": 5},
+    "B01": {"nome": "Água 0,5L", "categoria": "bebida", "preco": 1.20, "doses": 20},
 }
 
 # pedido: código -> quantidade pedida
@@ -34,7 +34,56 @@ def ler_ementa(nome_ficheiro):
     """Abre o ficheiro, salta a 1.ª linha (cabeçalho) e devolve o
     dicionário da ementa. Linhas inválidas são avisadas e ignoradas.
     Se o ficheiro não existir, avisa e devolve None (ou {})."""
-    pass
+    ementa = {}
+
+    try:
+        with open(nome_ficheiro, "r", encoding="utf-8") as ficheiro:
+            next(ficheiro, None)
+
+            for linha in ficheiro:
+                texto = linha.strip()
+                if not texto:
+                    print("Linha inválida ignorada:", texto)
+                    continue
+
+                campos = [campo.strip() for campo in texto.split(",")]
+                if len(campos) != 5:
+                    print("Linha inválida ignorada:", texto)
+                    continue
+
+                codigo, nome, categoria, preco_texto, doses_texto = campos
+
+                try:
+                    preco = float(preco_texto)
+                    doses = int(doses_texto)
+                except ValueError:
+                    print("Linha inválida ignorada:", texto)
+                    continue
+
+                if (
+                    not codigo
+                    or not nome
+                    or categoria not in CATEGORIAS
+                    or codigo in ementa
+                    or preco < 0
+                    or doses < 0
+                ):
+                    print("Linha inválida ignorada:", texto)
+                    continue
+
+                ementa[codigo] = {
+                    "nome": nome,
+                    "categoria": categoria,
+                    "preco": preco,
+                    "doses": doses,
+                }
+
+    except FileNotFoundError:
+        print("Erro: ficheiro não encontrado:", nome_ficheiro)
+    except OSError as erro:
+        print("Erro ao abrir o ficheiro:", erro)
+
+    return ementa
 
 
 def guardar_ementa(ementa, nome_ficheiro):
@@ -64,13 +113,52 @@ def pedir_filtros():
 
 def passa_filtros(artigo, filtros):
     """Devolve True se o artigo cumprir todos os filtros ativos."""
-    pass
+    if not filtros:
+        return True
+
+    categoria = filtros.get("categoria")
+    if categoria and artigo["categoria"].lower() != str(categoria).lower():
+        return False
+
+    preco_max = filtros.get("preco_max")
+    if preco_max is not None and artigo["preco"] > preco_max:
+        return False
+
+    apenas_disponiveis = filtros.get("disponiveis", filtros.get("so_disponiveis", False))
+    if apenas_disponiveis and artigo["doses"] <= 0:
+        return False
+
+    texto = filtros.get("texto")
+    if texto and str(texto).lower() not in artigo["nome"].lower():
+        return False
+
+    return True
 
 
 def mostrar_ementa(ementa, filtros=None):
     """Imprime a ementa em tabela (código, nome, categoria, preço, doses),
     só com os artigos que passam nos filtros."""
-    pass
+    artigos = [
+        (codigo, artigo)
+        for codigo, artigo in ementa.items()
+        if passa_filtros(artigo, filtros)
+    ]
+
+    print(f"{'Código':<8} {'Nome':<35} {'Categoria':<12} {'Preço':>8} {'Doses':>8}")
+    print("-" * 75)
+
+    if not artigos:
+        print("Nenhum artigo corresponde aos filtros.")
+        return
+
+    for codigo, artigo in artigos:
+        print(
+            f"{codigo:<8} "
+            f"{artigo['nome']:<35} "
+            f"{artigo['categoria']:<12} "
+            f"{artigo['preco']:>7.2f} € "
+            f"{artigo['doses']:>5}"
+        )
 
 
 # ---------------------------------------------------------------
