@@ -98,7 +98,15 @@ def guardar_ementa(ementa, nome_ficheiro):
 def pedir_inteiro_positivo(mensagem):
     """Pede um número ao utilizador até ele escrever um inteiro > 0.
     Usa try/except ValueError. Devolve o inteiro."""
-    pass
+    while True:
+        texto = input(mensagem).strip()
+        try:
+            valor = int(texto)
+            if valor > 0:
+                return valor
+            print("Erro: introduza um número inteiro positivo.")
+        except ValueError:
+            print("Erro: introduza um número inteiro positivo.")
 
 
 # ---------------------------------------------------------------
@@ -168,7 +176,26 @@ def adicionar_ao_pedido(ementa, pedido):
     """Pede código e quantidade. Valida: código existe, quantidade válida,
     (já pedido + nova quantidade) <= doses. Se o artigo já estiver no
     pedido, soma à quantidade existente."""
-    pass
+    
+    codigo = input("Código do artigo: ").strip().upper()
+
+    if codigo not in ementa:
+        print("Erro: código inexistente.")
+        return
+
+    artigo = ementa[codigo]
+    quantidade = pedir_inteiro_positivo("Quantidade: ")
+    quantidade_no_pedido = pedido.get(codigo, 0)
+
+    if quantidade_no_pedido + quantidade > artigo["doses"]:
+        print("Erro: quantidade superior às doses disponíveis.")
+        return
+
+    pedido[codigo] = quantidade_no_pedido + quantidade
+    print(
+        f"Adicionado ao pedido: {artigo['nome']} "
+        f"(quantidade: {pedido[codigo]})."
+    )
 
 
 def calcular_desconto(ementa, pedido):
